@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  web:
+    container_name: web_nginx
+    image: nginx
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+      - .:/var/www/html
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - net
+
+  db:
+    container_name: db
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: example_laravel
+    networks:
+      - net
+
+  php:
+    container_name: main
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - .:/var/www/html
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
